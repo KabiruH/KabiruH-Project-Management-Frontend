@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import Layout from '../components/layout';
 
@@ -8,16 +8,60 @@ const Institutions = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const [newInstitution, setNewInstitution] = useState({
-    name: '',
-    email: '',
-    contact: '',
-    subcounty: '',
-    county: '',
-    contactPerson: '',
-    contactNumber: '',
-    awardLeader: '',
+    InstitutionName: '',
+    InstitutionEmail: '',
+    InstitutionContact: '',
+    SubCounty: '',
+    CountyID: '',
+    ContactPerson: '',
+    ContactNumber: '',
+    AwardLeader: '',
+    StageID: '',
+    StatusID: '',
+    LicenseStartDate: '',
+    LicenseEndDate: '',
+    Notes: ''
   });
   const [currentInstitution, setCurrentInstitution] = useState(null);
+
+  useEffect(() => {
+    fetchInstitutions();
+  }, []);
+
+  const fetchInstitutions = async () => {
+    try {
+      const response = await fetch('http://localhost:5248/api/Institutions');
+      const data = await response.json();
+      setInstitutions(data);
+    } catch (error) {
+      console.error('Error fetching institutions:', error);
+    }
+  };
+
+  const addInstitution = async () => {
+    try {
+      const response = await fetch('http://localhost:5248/api/Institutions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newInstitution),
+      });
+      if (response.ok) {
+        fetchInstitutions(); // Refresh the list after adding
+        closeModal();
+      } else {
+        console.error('Error adding institution');
+      }
+    } catch (error) {
+      console.error('Error adding institution:', error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewInstitution((prev) => ({ ...prev, [name]: value }));
+  };
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -42,37 +86,24 @@ const Institutions = () => {
 
   const resetNewInstitution = () => {
     setNewInstitution({
-      name: '',
-      email: '',
-      contact: '',
-      subcounty: '',
-      county: '',
-      contactPerson: '',
-      contactNumber: '',
-      awardLeader: '',
+      InstitutionName: '',
+      InstitutionEmail: '',
+      InstitutionContact: '',
+      SubCounty: '',
+      CountyID: '',
+      ContactPerson: '',
+      ContactNumber: '',
+      AwardLeader: '',
+      StageID: '',
+      StatusID: '',
+      LicenseStartDate: '',
+      LicenseEndDate: '',
+      Notes: ''
     });
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewInstitution((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const addInstitution = () => {
-    setInstitutions([...institutions, newInstitution]);
-    closeModal();
-  };
-
-  const updateInstitution = () => {
-    const updatedInstitutions = institutions.map((inst) =>
-      inst === currentInstitution ? newInstitution : inst
-    );
-    setInstitutions(updatedInstitutions);
-    closeEditModal();
-  };
-
   const filteredInstitutions = institutions.filter((institution) =>
-    institution.name.toLowerCase().includes(searchTerm.toLowerCase())
+    institution.InstitutionName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -110,24 +141,26 @@ const Institutions = () => {
                 <th className="px-4 py-2 border">License Start</th>
                 <th className="px-4 py-2 border">License End</th>
                 <th className="px-4 py-2 border">Award Leader</th>
+                <th className="px-4 py-2 border">Notes</th>
                 <th className="px-4 py-2 border">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredInstitutions.map((institution, index) => (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border">{institution.name}</td>
-                  <td className="px-4 py-2 border">{institution.stage}</td>
-                  <td className="px-4 py-2 border">{institution.status}</td>
-                  <td className="px-4 py-2 border">{institution.email}</td>
-                  <td className="px-4 py-2 border">{institution.contact}</td>
-                  <td className="px-4 py-2 border">{institution.subcounty}</td>
-                  <td className="px-4 py-2 border">{institution.county}</td>
-                  <td className="px-4 py-2 border">{institution.contactPerson}</td>
-                  <td className="px-4 py-2 border">{institution.contactNumber}</td>
-                  <td className="px-4 py-2 border">{institution.licenseStart}</td>
-                  <td className="px-4 py-2 border">{institution.licenseEnd}</td>
-                  <td className="px-4 py-2 border">{institution.awardLeader}</td>
+                  <td className="px-4 py-2 border">{institution.InstitutionName}</td>
+                  <td className="px-4 py-2 border">{institution.StageID}</td>
+                  <td className="px-4 py-2 border">{institution.StatusID}</td>
+                  <td className="px-4 py-2 border">{institution.InstitutionEmail}</td>
+                  <td className="px-4 py-2 border">{institution.InstitutionContact}</td>
+                  <td className="px-4 py-2 border">{institution.SubCounty}</td>
+                  <td className="px-4 py-2 border">{institution.CountyID}</td>
+                  <td className="px-4 py-2 border">{institution.ContactPerson}</td>
+                  <td className="px-4 py-2 border">{institution.ContactNumber}</td>
+                  <td className="px-4 py-2 border">{new Date(institution.LicenseStartDate).toLocaleDateString()}</td>
+                  <td className="px-4 py-2 border">{new Date(institution.LicenseEndDate).toLocaleDateString()}</td>
+                  <td className="px-4 py-2 border">{institution.AwardLeader}</td>
+                  <td className="px-4 py-2 border">{institution.Notes}</td>
                   <td className="px-4 py-2 border">
                     <button
                       onClick={() => openEditModal(institution)}
@@ -152,82 +185,121 @@ const Institutions = () => {
           <div className="space-y-4">
             <input
               type="text"
-              name="name"
+              name="InstitutionName"
               placeholder="Institution Name"
-              value={newInstitution.name}
+              value={newInstitution.InstitutionName}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
             <input
               type="email"
-              name="email"
+              name="InstitutionEmail"
               placeholder="Institution Email"
-              value={newInstitution.email}
+              value={newInstitution.InstitutionEmail}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
             <input
               type="text"
-              name="contact"
+              name="InstitutionContact"
               placeholder="Institution Contact"
-              value={newInstitution.contact}
+              value={newInstitution.InstitutionContact}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
             <input
               type="text"
-              name="subcounty"
+              name="SubCounty"
               placeholder="Subcounty"
-              value={newInstitution.subcounty}
+              value={newInstitution.SubCounty}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
             <input
               type="text"
-              name="county"
+              name="CountyID"
               placeholder="County"
-              value={newInstitution.county}
+              value={newInstitution.CountyID}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
             <input
               type="text"
-              name="contactPerson"
+              name="ContactPerson"
               placeholder="Contact Person"
-              value={newInstitution.contactPerson}
+              value={newInstitution.ContactPerson}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
             <input
               type="text"
-              name="contactNumber"
+              name="ContactNumber"
               placeholder="Contact Number"
-              value={newInstitution.contactNumber}
+              value={newInstitution.ContactNumber}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
             <input
               type="text"
-              name="awardLeader"
+              name="AwardLeader"
               placeholder="Award Leader"
-              value={newInstitution.awardLeader}
+              value={newInstitution.AwardLeader}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
-          </div>
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={addInstitution}
-              className="bg-blue-500 text-white p-2 rounded mr-2"
-            >
-              Add
-            </button>
-            <button
-              onClick={closeModal}
-              className="bg-red-500 text-white p-2 rounded"
-            >
-              Cancel
-            </button>
+            <input
+              type="text"
+              name="StageID"
+              placeholder="Stage ID"
+              value={newInstitution.StageID}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="StatusID"
+              placeholder="Status ID"
+              value={newInstitution.StatusID}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="date"
+              name="LicenseStartDate"
+              placeholder="License Start Date"
+              value={newInstitution.LicenseStartDate}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="date"
+              name="LicenseEndDate"
+              placeholder="License End Date"
+              value={newInstitution.LicenseEndDate}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <textarea
+              name="Notes"
+              placeholder="Notes"
+              value={newInstitution.Notes}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={addInstitution}
+                className="bg-blue-500 text-white p-2 rounded"
+              >
+                Add
+              </button>
+              <button
+                onClick={closeModal}
+                className="bg-gray-500 text-white p-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </Modal>
         <Modal
@@ -241,88 +313,130 @@ const Institutions = () => {
           <div className="space-y-4">
             <input
               type="text"
-              name="name"
+              name="InstitutionName"
               placeholder="Institution Name"
-              value={newInstitution.name}
+              value={newInstitution.InstitutionName}
               onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Institution Email"
-                  value={newInstitution.email}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  name="contact"
-                  placeholder="Institution Contact"
-                  value={newInstitution.contact}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  name="subcounty"
-                  placeholder="Subcounty"
-                  value={newInstitution.subcounty}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  name="county"
-                  placeholder="County"
-                  value={newInstitution.county}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  name="contactPerson"
-                  placeholder="Contact Person"
-                  value={newInstitution.contactPerson}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  name="contactNumber"
-                  placeholder="Contact Number"
-                  value={newInstitution.contactNumber}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  name="awardLeader"
-                  placeholder="Award Leader"
-                  value={newInstitution.awardLeader}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-              <div className="flex justify-end mt-4">
-                <button
-                  onClick={updateInstitution}
-                  className="bg-blue-500 text-white p-2 rounded mr-2"
-                >
-                  Update
-                </button>
-                <button
-                  onClick={closeEditModal}
-                  className="bg-red-500 text-white p-2 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
-            </Modal>
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="email"
+              name="InstitutionEmail"
+              placeholder="Institution Email"
+              value={newInstitution.InstitutionEmail}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="InstitutionContact"
+              placeholder="Institution Contact"
+              value={newInstitution.InstitutionContact}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="SubCounty"
+              placeholder="Subcounty"
+              value={newInstitution.SubCounty}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="CountyID"
+              placeholder="County"
+              value={newInstitution.CountyID}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="ContactPerson"
+              placeholder="Contact Person"
+              value={newInstitution.ContactPerson}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="ContactNumber"
+              placeholder="Contact Number"
+              value={newInstitution.ContactNumber}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="AwardLeader"
+              placeholder="Award Leader"
+              value={newInstitution.AwardLeader}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="StageID"
+              placeholder="Stage ID"
+              value={newInstitution.StageID}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="StatusID"
+              placeholder="Status ID"
+              value={newInstitution.StatusID}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="date"
+              name="LicenseStartDate"
+              placeholder="License Start Date"
+              value={newInstitution.LicenseStartDate}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="date"
+              name="LicenseEndDate"
+              placeholder="License End Date"
+              value={newInstitution.LicenseEndDate}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <textarea
+              name="Notes"
+              placeholder="Notes"
+              value={newInstitution.Notes}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => {
+                  // You should add an update function similar to addInstitution
+                  // updateInstitution(currentInstitution.id);
+                  closeEditModal();
+                }}
+                className="bg-blue-500 text-white p-2 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={closeEditModal}
+                className="bg-gray-500 text-white p-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </Layout>
-      );
-    };
-    
-    export default Institutions;
-    
+        </Modal>
+      </div>
+    </Layout>
+  );
+};
+
+export default Institutions;
