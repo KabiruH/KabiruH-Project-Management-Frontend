@@ -1,101 +1,140 @@
-import React,{useState} from 'react'
-import {Facebook,GitHub,Google} from '@mui/icons-material'
+import React, { useState } from 'react';
+import { useNavigate, Link, NavLink } from 'react-router-dom';
+import { loginUser } from '../services/userS'
 
-const SignIn = () => {
+function Signin({ handleLogin }) {
+  const [username, setUsername] = useState(''); // Changed from email to username
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const [isLogin,setIsLogin] = useState(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
-  const [loginEmail,setLoginEmail] = useState("");
-  const [loginPassword,setLoginPassword] = useState("");
-
-  const [registerEmail,setRegisterEmail] = useState("");
-  const [registerPassword,setRegisterPassword] = useState("");
-  const [registerName,setRegisterName] = useState("");
-  const [registerAvatar,setRegisterAvatar] = useState("");
-  
-  const LoginForm = () => {
-    return(
-       <div className="bg-white rounded-2xl shadow-2xl flex flex-col w-full md:w-1/3 items-center max-w-4xl transition duration-1000 ease-out">
-             <h2 className='p-3 text-3xl font-bold text-pink-400'>Horiz</h2>
-             <div className="inline-block border-[1px] justify-center w-20 border-blue-400 border-solid"></div>
-             <h3 className='text-xl font-semibold text-blue-400 pt-2'>Sign In!</h3>
-             <div className='flex space-x-2 m-4 items-center justify-center'>
-                <div className="socialIcon">
-                <Facebook/>
-                </div>
-                <div className="socialIcon">
-                <GitHub/>
-                </div>
-                <div className="socialIcon">
-                <Google/>  
-                </div>
-             </div>
-             {/* Inputs */}
-             <div className='flex flex-col items-center justify-center'>
-              <input type='email' className='rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0' placeholder='Email'></input>
-              <input type="password" className='rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0' placeholder='Password'></input>
-              <button className='rounded-2xl m-2 text-white bg-blue-400 w-2/5 px-4 py-2 shadow-md hover:text-blue-400 hover:bg-white transition duration-200 ease-in'>
-                Sign In
-              </button>
-             </div>
-             <div className="inline-block border-[1px] justify-center w-20 border-blue-400 border-solid"></div>
-             <p className='text-blue-400 mt-4 text-sm'>Don't have an account?</p>
-             <p className='text-blue-400 mb-4 text-sm font-medium cursor-pointer' onClick={() => setIsLogin(false)}>Create a New Account?</p>
-          </div>
-    )
-  }
-  
-  const  SignUpForm = () => {
-     return(
-        <div className="bg-blue-400 text-white rounded-2xl shadow-2xl  flex flex-col w-full  md:w-1/3 items-center max-w-4xl transition duration-1000 ease-in">
-              <h2 className='p-3 text-3xl font-bold text-white'>Horiz</h2>
-             <div className="inline-block border-[1px] justify-center w-20 border-white border-solid"></div>
-             <h3 className='text-xl font-semibold text-white pt-2'>Create Account!</h3>
-             <div className='flex space-x-2 m-4 items-center justify-center'>
-                <div className="socialIcon border-white">
-                <Facebook className="text-white"/>
-                </div>
-                <div className="socialIcon border-white">
-                <GitHub className="text-white"/>
-                </div>
-                <div className="socialIcon border-white">
-                <Google className="text-white"/>  
-                </div>
-             </div>
-             {/* Inputs */}
-             <div className='flex flex-col items-center justify-center mt-2'>
-             <input type="password" className='rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0' placeholder='Name'></input>
-              <input type='email' className='rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0' placeholder='Email'></input>
-              <input type="password" className='rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0' placeholder='Password'></input>
-              <input type="password" className='rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0' placeholder='Avatar URL'></input>
-              <button className='rounded-2xl m-4 text-blue-400 bg-white w-3/5 px-4 py-2 shadow-md hover:text-white hover:bg-blue-400 transition duration-200 ease-in'>
-                Sign Up
-              </button>
-             </div>
-             <div className="inline-block border-[1px] justify-center w-20 border-white border-solid"></div>
-             <p className='text-white mt-4 text-sm'>Already have an account?</p>
-             <p className='text-white mb-4 text-sm font-medium cursor-pointer' onClick={() => setIsLogin(true)}>Sign In to your Account?</p>
-          </div>
-     )
-  }
+    try {
+      const userData = { username, password };
+      const data = await loginUser(userData);
+      console.log(data); // Log successful response
+      handleLogin(data); // Call your handleLogin function
+      navigate("/dashboard"); // Navigate to dashboard on success
+    } catch (error) {
+      setIsLoading(false);
+      setError(error.response?.data?.message || 'Unknown error occurred.');
+    }
+  };
 
   return (
-    <div className="bg-gray-100 flex flex-col items-center justify-center min-h-screen md:py-2">
-    <main className="flex items-center w-full px-2 md:px-20">
-      <div className="hidden md:inline-flex flex-col flex-1 space-y-1">
-        <p className='text-6xl text-blue-500 font-bold'>Horiz</p>
-        <p className='font-medium text-lg leading-1 text-pink-400'>Explore your interests, meet new friends & expand your horions</p>
+    <section className="gradient-form h-screen bg-white flex items-center justify-center ">
+      <div className="container h-full p-10 mx-auto">
+        <div className="g-6 flex h-full flex-wrap items-center justify-center text-neutral-800 dark:text-neutral-200">
+          <div className="w-auto border border-gray-300 rounded-2xl p-4">
+            <div className="block rounded-3xl">
+              <div className="g-0 lg:flex lg:flex-wrap">
+                {/* Left column container */}
+                <div>
+                  <div className="md:mx-2 md:p-12">
+                    {/* Logo */}
+                    <NavLink to='/'>
+                      <div className="text-center">
+                        <img
+                          className="mx-auto w-52"
+                          src="https://www.presidentsaward.or.ke/wp-content/uploads/2023/08/logo_blue.png"
+                          alt="logo"
+                        />
+                      </div>
+                    </NavLink>
+                    <div className='text-center'>
+                      <p className="mb-1 mt-5 pb-1 text-2xl font-semibold text-blue-900">The President's Award - Kenya</p>
+                    </div>
+                    <form onSubmit={handleSubmit}>
+                      <div className='text-center'>
+                        <p className="relative mb-2 text-zinc-500 font-semibold">Please login to your account</p>
+                      </div>
+
+                      {/* Username input */}
+                      <br />
+                      {error && <div className="error text-red-500 font-bold text-center">{error}</div>}
+                      <div className="relative mb-4" data-te-input-wrapper-init>
+                        <label htmlFor="username" className="mb-0 mr-2 text-zinc-700">
+                          Username:
+                        </label>
+                        <input
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          className="peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:placeholder:text-neutral [&:not([data-te-input-placeholder-active])]"
+                          id="username"
+                          placeholder="Username"
+                          autoComplete="off"
+                          required
+                        />
+                      </div>
+
+                      {/* Password input */}
+                      <div className="relative mb-4" data-te-input-wrapper-init>
+                        <label htmlFor="password" className="mb-0 mr-2 text-zinc-700">
+                          Password:
+                        </label>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:placeholder:text-neutral [&:not([data-te-input-placeholder-active])]"
+                          id="password"
+                          placeholder="Password"
+                          required
+                        />
+                      </div>
+
+                      {/* Submit button */}
+                      <div className="mb-12 pb-1 pt-1 text-center">
+                        <button
+                          className="mb-3 inline-block w-full rounded-full px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]"
+                          type="submit"
+                          disabled={isLoading}
+                          data-te-ripple-init
+                          data-te-ripple-color="light"
+                          style={{
+                            background: ' #F9500D'
+                          }}
+                        >
+                          {isLoading ? 'Loading...' : 'Log In'}
+                        </button>
+
+                        {/* Forgot password link */}
+                        <Link to="/reset" className="mb-0 mr-2 text-zinc-600">Forgot password?</Link>
+                      </div>
+
+                      {/* Register button */}
+                      <div className="flex items-center justify-between pb-6">
+                        <p className="mb-0 mr-2 text-zinc-500">Don't have an account?</p>
+                        <Link
+                          to="/signup"
+                          type="button"
+                          className="inline-block rounded-full border-2 border-danger px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal  text-white transition duration-150 ease-in-out hover:border-danger-600 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-danger-600 focus:border-danger-600 focus:text-danger-600 focus:outline-none focus:ring-0 active:border-danger-700 active:text-danger-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+                          data-te-ripple-init
+                          data-te-ripple-color="light"
+                          style={{
+                            background: ' #F9500D'
+                          }}
+                        >
+                          Register
+                        </Link>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      {
-        isLogin? (
-         <LoginForm/>
-        ):(
-         <SignUpForm/>
-        )
-      }
-    </main>
-    </div>
-  )
+    </section>
+  );
 }
 
-export default SignIn
+export default Signin;
+

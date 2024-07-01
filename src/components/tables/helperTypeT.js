@@ -2,25 +2,23 @@ import React from 'react';
 import Table from '../common/Table';
 
 const columns = [
-  { Header: 'County ID', accessor: 'countyID' },
-  { Header: 'County Name', accessor: 'countyName' },
-  { Header: 'Sub-County', accessor: 'subCounty' },
-  { Header: 'Region', accessor: 'region' },
+  { Header: 'Type ID', accessor: 'typeID' },
+  { Header: 'Type Name', accessor: 'typeName' },
   { Header: 'Notes', accessor: 'notes' },
 ];
 
-const CountyTable = ({ counties, openEditModal, deleteCounty }) => {
-  const renderRowActions = ({ countyID }) => (
+const HelperTypesTable = ({ helpertypes, openEditModal, deleteHelperTypes }) => {
+  const renderRowActions = ({ typeID }) => (
     <div>
       <button
-        onClick={() => openEditModal({ countyID })}
+        onClick={() => openEditModal({ typeID })}
         className="bg-yellow-500 text-white p-1 rounded mr-2"
       >
         Edit
       </button>
       
       <button
-        onClick={() => deleteCounty(countyID)}
+        onClick={() => deleteHelperTypes(typeID)}
         className="bg-red-500 text-white p-1 rounded"
       >
         Delete
@@ -31,10 +29,10 @@ const CountyTable = ({ counties, openEditModal, deleteCounty }) => {
   return (
     <Table
       columns={columns}
-      data={counties}
+      data={helpertypes}
       renderRowActions={renderRowActions}
     />
   );
 };
 
-export default CountyTable;
+export default HelperTypesTable;

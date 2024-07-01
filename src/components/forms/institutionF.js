@@ -96,6 +96,7 @@ const InstitutionForm = ({ formValues, handleInputChange, handleDateChange, erro
           />
           {errors.contactNumber && <p className="text-red-500">{errors.contactNumber[0]}</p>}
         </div>
+
         <div>
           <Input
             name="licenseStartDate"

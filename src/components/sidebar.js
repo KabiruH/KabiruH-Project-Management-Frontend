@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome, FaCalendarAlt, FaBuilding, FaUser, FaProjectDiagram, FaCogs, FaSignOutAlt } from 'react-icons/fa'; 
+import { FaHome, FaCalendarAlt, FaBuilding, FaUser, FaProjectDiagram, FaCogs, FaSignOutAlt } from 'react-icons/fa';
 import { DarkModeContext } from './darkMode';
 
 const Sidebar = () => {
@@ -14,19 +14,45 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <FaHome /> },
     { name: 'Calendar', path: '/calendar', icon: <FaCalendarAlt /> },
-    { name: 'Institutions',
-        icon: <FaBuilding />,
-         dropdown: [
-          {name:'Institution', path: '/institutions/addInstitutions' },
-          {name:'counties', path:'/institutions/addCounties'},
-          {name:'status', path: '/institutions/institutionStatus'},
-          {name:'stages', path: '/institutions/institutionStages'},
-        ] 
-      },
-    { name: 'Participants', path: '/participants', icon: <FaUser />, dropdown: ['Participant', 'Levels'] },
-    { name: 'Project', path: '/project', icon: <FaProjectDiagram />, dropdown: ['Projects', 'Status', 'Testimonials', 'Donors'] },
+    {
+      name: 'Institutions',
+      icon: <FaBuilding />,
+      dropdown: [
+        { name: 'Institution', path: '/institutions/addInstitutions' },
+        { name: 'counties', path: '/institutions/addCounties' },
+        { name: 'status', path: '/institutions/institutionStatus' },
+        { name: 'stages', path: '/institutions/institutionStages' },
+      ]
+    },
+    {
+      name: 'Participants',
+      icon: <FaUser />,
+      dropdown: [
+        { name: 'Participant', path: '/participants/participant' },
+        { name: 'Levels', path: '/participants/participantLevels' }
+      ]
+    },
+
+    {
+      name: 'Project', 
+      icon: <FaProjectDiagram />, 
+      dropdown: [
+          {name: 'Projects', path: '/project'},
+          {name: 'Status'},
+          {name: 'Testimonials'},
+          {name: 'Donors'}
+        ]
+    },
     { name: 'Program', icon: <FaCogs />, dropdown: ['Programs'] },
-    { name: 'Helpers', path: '/helpers', icon: <FaUser />, dropdown: ['Award Leaders', 'Volunteers'] },
+    {
+      name: 'Helpers',
+      icon: <FaUser />,
+      dropdown: [
+        { name: 'Helper', path: '/helpers/helper' },
+        { name: 'Helper Type', path: '/helpers/helperType' },
+      ]
+    },
+
     { name: 'Training', path: '/training', icon: <FaCogs />, dropdown: ['Trainings', 'Categories', 'Levels', 'Training Type'] },
     { name: 'Financial', path: '/financial', icon: <FaCogs />, dropdown: ['Budget', 'Budget Request', 'Funding Type'] },
     {
